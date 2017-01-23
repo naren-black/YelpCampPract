@@ -1,28 +1,31 @@
-var express = require("express");
-var app = express();
-var bodyParser = require("body-parser");
-var mongoose = require("mongoose");
+var express = require("express"),
+    app = express(),
+    bodyParser = require("body-parser"),
+    mongoose = require("mongoose");
+
 mongoose.connect("mongodb://localhost/yelp_camp");
 
 var campgroundSchema = mongoose.Schema({
   name: String,
-  image: String
+  image: String,
+  descry: String
 });
 
 var Campground = mongoose.model("Campground", campgroundSchema);
 
-// var campgrounds = [
-//         {name: "Salmon Creek", image: "https://farm9.staticflickr.com/8442/7962474612_bf2baf67c0.jpg"},
-//         {name: "Granite Hill", image: "https://farm1.staticflickr.com/60/215827008_6489cd30c3.jpg"},
-//         {name: "Mountain Goat's Rest", image: "https://farm7.staticflickr.com/6057/6234565071_4d20668bbd.jpg"},
-//         {name: "Salmon Creek", image: "https://farm9.staticflickr.com/8442/7962474612_bf2baf67c0.jpg"},
-//         {name: "Granite Hill", image: "https://farm1.staticflickr.com/60/215827008_6489cd30c3.jpg"},
-//         {name: "Mountain Goat's Rest", image: "https://farm7.staticflickr.com/6057/6234565071_4d20668bbd.jpg"},
-//         {name: "Salmon Creek", image: "https://farm9.staticflickr.com/8442/7962474612_bf2baf67c0.jpg"},
-//         {name: "Granite Hill", image: "https://farm1.staticflickr.com/60/215827008_6489cd30c3.jpg"},
-//         {name: "Mountain Goat's Rest", image: "https://farm7.staticflickr.com/6057/6234565071_4d20668bbd.jpg"}
-//       ];
-      
+// Campground.create({
+//   "name" : "Babaji", 
+//   "image" : "https://s-media-cache-ak0.pinimg.com/736x/05/53/4a/05534ae73104d10207cb339b239d13b6.jpg",
+//   "descy": "The divinity who is one with God Shiva!"
+// }, function(err, camp) {
+//   if(err) {
+//     console.log(err);
+//   } else {
+//     console.log("The record got created: ");
+//     console.log(camp);
+//   }
+// });
+
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
 
@@ -35,7 +38,7 @@ app.get("/campgrounds", function(req, res) {
     if(err) {
       console.log(err);
     } else {
-      res.render("campgrounds", {campgrounds: campgrounds});
+      res.render("index", {campgrounds: campgrounds});
     }
   });
 });
@@ -43,7 +46,8 @@ app.get("/campgrounds", function(req, res) {
 app.post("/campgrounds", function(req, res) {
   var name = req.body.name;
   var image = req.body.image;
-  var newCampy = {name: name, image: image};
+  var desc = req.body.descry;
+  var newCampy = {name: name, image: image, descry: desc};
   Campground.create(newCampy, function(err, camp) {
     if(err) {
       console.log(err);
@@ -57,6 +61,17 @@ app.post("/campgrounds", function(req, res) {
 
 app.get("/campgrounds/new", function(req, res) {
   res.render("new");
+});
+
+app.get("/campgrounds/:id", function(req, res) {
+  Campground.findById(req.params.id, function(err, foundCampGround) {
+    if(err) {
+      console.log(err);
+    } else {
+      res.render("show", {campground: foundCampGround});
+    }
+    
+  });
 });
 
 app.listen(process.env.PORT, process.env.IP, function() {
