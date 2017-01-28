@@ -8,6 +8,9 @@
                 <li class="list-group-item">Something 2</li>
                 <li class="list-group-item">Something 3</li>
             </div>
+            <p>
+                <a class="btn btn-success" href="/campgrounds">Back To Campgrounds</a>
+            </p>
         </div>
         <div class="col-md-9">
             <div class="thumbnail">
@@ -18,17 +21,24 @@
                     <p><%= campground.description %></p>
                 </div>
             </div>
+            <div class="well">
+                <div class="text-right">
+                    <a class="btn btn-success" href="/campgrounds/<%= campground._id %>/comments/new">Add A New Comment?</a>
+                </div>
+                <hr>
+                <% campground.comments.forEach(function(comment) { %>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <strong><%= comment.author %></strong>
+                            <span class="pull-right">10 days ago</span>
+                            <p><%= comment.text %></p>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
         </div>
     </div>
 </div>
 
 
-
-<% campground.comments.forEach(function(comment) { %>
-    <p><strong><%= comment.author %></strong> ----- <%= comment.text %></p>
-<% }); %>
-<p>
-    <a class="btn btn-success" href="/campgrounds/<%= campground._id %>/comments/new">Add A New Comment?</a>
-    <a class="btn btn-success" href="/campgrounds">Back To Campgrounds</a>
-</p>
 <% include ../partials/footer %>
