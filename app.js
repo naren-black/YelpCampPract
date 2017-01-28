@@ -3,14 +3,13 @@ var express = require("express"),
     bodyParser = require("body-parser"),
     mongoose = require("mongoose"),
     Campground = require("./models/campground"),
+    Comment = require("./models/comment.js"),
     seedDB = require("./seeds");
-    
-seedDB();
+  
 mongoose.connect("mongodb://localhost/yelp_camp");
-
-
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
+seedDB();
 
 app.get("/", function(req, res) {
   res.render("landing");
@@ -21,13 +20,13 @@ app.get("/campgrounds", function(req, res) {
     if(err) {
       console.log(err);
     } else {
-      res.render("index", {campgrounds: campgrounds});
+      res.render("campgrounds/index", {campgrounds: campgrounds});
     }
   });
 });
 
 app.get("/campgrounds/new", function(req, res) {
-  res.render("new");
+  res.render("campgrounds/new");
 });
 
 app.post("/campgrounds", function(req, res) {
@@ -52,9 +51,38 @@ app.get("/campgrounds/:id", function(req, res) {
       console.log(err);
     } else {
       console.log(foundCampGround);
-      res.render("show", {campground: foundCampGround});
+      res.render("campgrounds/show", {campground: foundCampGround});
     }
     
+  });
+});
+
+app.get("/campgrounds/:id/comments/new", function(req, res) {
+  Campground.findById(req.params.id, function(err, campground) {
+    if(err) {
+      console.log(err);
+    } else {
+      console.log(campground);
+      res.render("comments/new", {campground: campground} );
+    }
+  });
+});
+
+app.post("/campgrounds/:id/comments", function(req, res) {
+  Campground.findById(req.params.id, function(err, campground) {
+      if(err) {
+        console.log(err);
+      } else {
+        Comment.create(req.body.comment, function(err, comment) {
+          if(err) {
+            res.redirect("/campgrounds");
+          } else {
+            campground.comments.push(comment);
+            campground.save();
+            res.redirect("/campgrounds/" + campground._id);
+          }
+        });
+      }
   });
 });
 
