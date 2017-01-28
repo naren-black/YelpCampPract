@@ -1,30 +1,13 @@
 var express = require("express"),
     app = express(),
     bodyParser = require("body-parser"),
-    mongoose = require("mongoose");
-
+    mongoose = require("mongoose"),
+    Campground = require("./models/campground"),
+    seedDB = require("./seeds");
+    
+seedDB();
 mongoose.connect("mongodb://localhost/yelp_camp");
 
-var campgroundSchema = mongoose.Schema({
-  name: String,
-  image: String,
-  descry: String
-});
-
-var Campground = mongoose.model("Campground", campgroundSchema);
-
-// Campground.create({
-//   "name" : "Babaji", 
-//   "image" : "https://s-media-cache-ak0.pinimg.com/736x/05/53/4a/05534ae73104d10207cb339b239d13b6.jpg",
-//   "descy": "The divinity who is one with God Shiva!"
-// }, function(err, camp) {
-//   if(err) {
-//     console.log(err);
-//   } else {
-//     console.log("The record got created: ");
-//     console.log(camp);
-//   }
-// });
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
@@ -43,11 +26,15 @@ app.get("/campgrounds", function(req, res) {
   });
 });
 
+app.get("/campgrounds/new", function(req, res) {
+  res.render("new");
+});
+
 app.post("/campgrounds", function(req, res) {
   var name = req.body.name;
   var image = req.body.image;
-  var desc = req.body.descry;
-  var newCampy = {name: name, image: image, descry: desc};
+  var desc = req.body.description;
+  var newCampy = {name: name, image: image, description: desc};
   Campground.create(newCampy, function(err, camp) {
     if(err) {
       console.log(err);
@@ -59,15 +46,12 @@ app.post("/campgrounds", function(req, res) {
   res.redirect("/campgrounds");
 });
 
-app.get("/campgrounds/new", function(req, res) {
-  res.render("new");
-});
-
 app.get("/campgrounds/:id", function(req, res) {
-  Campground.findById(req.params.id, function(err, foundCampGround) {
+  Campground.findById(req.params.id).populate("comments").exec(function(err, foundCampGround) {
     if(err) {
       console.log(err);
     } else {
+      console.log(foundCampGround);
       res.render("show", {campground: foundCampGround});
     }
     
