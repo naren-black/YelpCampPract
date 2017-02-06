@@ -1,13 +1,14 @@
-var express       = require("express"),
-    app           = express(),
-    bodyParser    = require("body-parser"),
-    mongoose      = require("mongoose"),
-    passport      = require("passport"),
-    LocalStrategy = require("passport-local"),
-    User          = require("./models/user"),
-    Campground    = require("./models/campground"),
-    Comment       = require("./models/comment"),
-    seedDB        = require("./seeds");
+var express         = require("express"),
+    app             = express(),
+    bodyParser      = require("body-parser"),
+    mongoose        = require("mongoose"),
+    methodOverride  = require("method-override"),
+    passport        = require("passport"),
+    LocalStrategy   = require("passport-local"),
+    User            = require("./models/user"),
+    Campground      = require("./models/campground"),
+    Comment         = require("./models/comment"),
+    seedDB          = require("./seeds");
 
 var commentRoutes     = require("./routes/comments"),
     campgroundRoutes  = require("./routes/campgrounds"),
@@ -17,7 +18,8 @@ mongoose.connect("mongodb://localhost/yelp_camp");
 app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/public"));
 app.use(bodyParser.urlencoded({extended: true}));
-seedDB();
+app.use(methodOverride("_method"));
+// seedDB();
 
 app.use(require("express-session")({
   secret: "Enter in all ye who seek to find within",
