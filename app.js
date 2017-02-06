@@ -17,7 +17,7 @@ mongoose.connect("mongodb://localhost/yelp_camp");
 app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/public"));
 app.use(bodyParser.urlencoded({extended: true}));
-// seedDB();
+seedDB();
 
 app.use(require("express-session")({
   secret: "Enter in all ye who seek to find within",
