@@ -58,6 +58,27 @@ router.get("/:id/edit", function(req, res) {
   });
 });
 
+router.put("/:id", function(req, res) {
+  Campground.findByIdAndUpdate(req.params.id, req.body.campground, function(err, updatedCampground) {
+    if(err) {
+      res.redirect("/campgrounds");
+    } else {
+      res.redirect("/campgrounds/" + req.params.id);
+    }
+  });  
+});
+
+router.delete("/:id", function(req, res) {
+  Campground.findByIdAndRemove(req.params.id, function(err) {
+    if(err) {
+      res.redirect("/campgrounds");
+    } else {
+      res.redirect("/campgrounds");
+    }
+  });
+  
+});
+
 function isLoggedIn(req, res, next) {
   if(req.isAuthenticated()) {
     return next();
